@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Ajax Test1</title>
+<link rel="stylesheet" type="text/css" href="./13_12_16-ajax1.css" />
+
+
+<script type="text/javascript" src="./underscore.js"></script>
+
+<script type="text/javascript">
+window.onload= function() {
+	// 로드 다른 방법 
+};
+window.addEventListener("load", function() {
+	var compiled = _.template("<div><%= name %></div>");
+	var result = compiled({name: 'moe!!!!'});
+	console.log(result);
+});
+
+function buttonClick1() {
+
+	var url = 'newDataGreen.json';
+	var request = new XMLHttpRequest();
+	
+	request.open('GET', url, true);
+	request.send(null);
+	
+	
+	request.onreadystatechange=function()
+	{
+		if ( request.readyState == 4 && request.status == 200 )
+		{
+			result = request.responseText;
+			listArray = JSON.parse(result);
+			alert(listArray.title);
+		}
+	};
+}
+function buttonClick2() {
+
+	var url = 'newDataGreen2.json';
+	var request = new XMLHttpRequest();
+	
+	request.open('GET', url, true);
+	request.send(null);
+	
+	request.onreadystatechange=function()
+	{
+		if ( request.readyState == 4 && request.status == 200 )
+		{
+			result = request.responseText;
+			listArray = JSON.parse(result);
+			alert(listArray.title);
+		}
+	};
+}
+function buttonClick3() {
+
+	var url = 'newDataGreen3.json';
+	var request = new XMLHttpRequest();
+	
+	request.open('GET', url, true);
+	request.send(null);
+	
+	
+	request.onreadystatechange=function()
+	{
+		if ( request.readyState == 4 && request.status == 200 )
+		{
+			result = request.responseText;
+			listArray = JSON.parse(result);
+			alert(listArray.title);
+		}
+	};
+}
+var insertH2 = _.template("<h2><%= recipe %></h2>");
+
+function callback(jsonData) {
+	var insertContent = function(value){
+		var div = document.createElement('div');
+		div.className = "recipe";
+		div.innerHTML = insertH2({recipe: value.recipeName}) + value.contents;
+		document.body.appendChild(div);
+	}
+	
+	jsonData.forEach(insertContent);
+	
+	/*
+	for (var i=0; i < jsonData.length; i++) {
+	  	var div = document.createElement('div');
+		div.className = "recipe";
+		//div.innerHTML = "<h2>" + jsonData[i].recipeName + "</h2>" + jsonData[i].contents;
+		div.innerHTML = insertH2({recipe: jsonData[i].recipeName}) + jsonData[i].contents;
+		document.body.appendChild(div);
+	};
+	*/
+
+}
+</script>
+
+</head>
+<body>
+  <h1>My Recipe List</h1>
+  <p><input type="button" value=" 버튼1 " onclick='buttonClick1();'></p>
+  <p><input type="button" value=" 버튼2 " onclick='buttonClick2();'></p>
+  <p><input type="button" value=" 버튼3 " onclick='buttonClick3();'></p>
+</body>
+</html>
