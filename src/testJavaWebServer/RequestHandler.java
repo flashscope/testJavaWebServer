@@ -4,11 +4,9 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Calendar;
 
 public class RequestHandler extends Thread {
 	
@@ -39,27 +37,28 @@ public class RequestHandler extends Thread {
 			
 			// NO HEADER ERROR
 			if (header == null || header.equals("")) {
+				MyLogger.printLog("connection no header : " + connection.getInetAddress().getHostAddress() );
 				return;
 			}
 
 			String requestUrl = HttpParser.parseRequestUrl(header);
 			String requestPath = HttpParser.parseRequestPath(requestUrl);
 			
-			System.out.println("header : " + header);
-			System.out.println("requestUrl : " + requestUrl);
+			//System.out.println("header : " + header);
+			//System.out.println("requestUrl : " + requestUrl);
 			System.out.println("requestPath : " + requestPath);
 
 			if ("/".equals(requestPath)) {
-				if ( isFileExists("index.html") ) {
-					requestPath = "index.html";
-				} else if ( isFileExists("index.htm") ) {
-					requestPath = "index.htm";
-				} else {
-					// 404 ERROR
+				if ( isFileExists("/index.html") ) {
+					requestPath = "/index.html";
+				} else if ( isFileExists("/index.htm") ) {
+					requestPath = "/index.htm";
 				}
 			}
 			
+			
 			File file = new File(HTML_DIR + requestPath);
+			
 			if ( !file.exists() ) {
 				file = new File(HTML_DIR + "/Error/404.html");
 				responseNotFound(dos, file.length());
@@ -75,8 +74,6 @@ public class RequestHandler extends Thread {
 			
 			dos.flush();
 			br.close();
-			
-			
 			
 			connection.close();
 		} catch (Exception e) {
