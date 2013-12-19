@@ -38,6 +38,7 @@ public class RequestHandler extends Thread {
 			// NO HEADER ERROR
 			if (header == null || header.equals("")) {
 				MyLogger.printLog("connection no header : " + connection.getInetAddress().getHostAddress() );
+				connection.close();
 				return;
 			}
 
@@ -47,12 +48,13 @@ public class RequestHandler extends Thread {
 			//System.out.println("header : " + header);
 			//System.out.println("requestUrl : " + requestUrl);
 			System.out.println("requestPath : " + requestPath);
-
-			if ("/".equals(requestPath)) {
+			System.out.println("extension :" +HttpParser.getExtension(requestPath));
+			
+			if ( !HttpParser.isFile(requestPath) ) {
 				if ( isFileExists("/index.html") ) {
-					requestPath = "/index.html";
+					requestPath += "/index.html";
 				} else if ( isFileExists("/index.htm") ) {
-					requestPath = "/index.htm";
+					requestPath += "/index.htm";
 				}
 			}
 			
