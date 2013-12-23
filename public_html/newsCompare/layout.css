@@ -1,0 +1,139 @@
+/*쓸만한 디폴트 살리기*/
+
+h2 {
+display: block;
+font-size: 1.5em;
+-webkit-margin-before: 0.2em;
+-webkit-margin-after: 0.2em;
+-webkit-margin-start: 0px;
+-webkit-margin-end: 0px;
+font-weight: bold;
+}
+
+header {
+	font-family:"Arial", "Helventica", "sans-serif";
+	text-shadow: rgb(200, 200, 200) 0.1em 0.1em 0.2em;
+	
+	background: linear-gradient(to right, rgba(230,230,230,1) 0%,rgba(255,255,255,1) 35%,rgba(255,255,255,1) 100%);
+	border-color: rgb(232, 232, 232);
+	border-style: solid;
+	border-width: 1px;
+	
+	width:100%;
+	padding-left:25px;
+	height:34px;
+
+}
+
+comment_show {
+	overflow:auto;
+	position: absolute;
+	top: 10px;
+	left: 1180px;
+}
+
+#stand_left {
+	
+	font-family:"Arial", "Helventica", "sans-serif";
+	font-size:2em;
+	word-wrap:break-word;
+	
+	background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(255,255,255,1) 9%,rgba(255,255,255,1) 100%);
+	border-color: rgb(232, 232, 232);
+	border-style: solid;
+	border-width: 1px;
+	
+	overflow:auto;
+	padding-left:20px;
+	padding-top:10px;
+	padding-bottom:10px;
+	
+	width:50%;
+	height:568px;
+	
+	overflow:auto;
+	position: absolute;
+	top: 35px;
+	left: 0px;
+}
+#stand_right {
+	font-family:"Arial", "Helventica", "sans-serif";
+	font-size:2em;
+	word-wrap:break-word;
+	
+	background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(255,255,255,1) 9%,rgba(255,255,255,1) 100%);
+	
+
+	
+	border-color: rgb(232, 232, 232);
+	border-style: solid;
+	border-width: 1px;
+	
+	padding-left:20px;
+	padding-top:10px;
+	padding-bottom:10px;
+	
+	width:50%;
+	height:568px;
+	overflow:auto;
+	position: absolute;
+	top: 35px;
+	left: 50%;
+	
+}
+.paper {
+	font-size:0.5em;
+	line-height:150%;
+}
+
+.news {
+	font-size:0.8em;
+	line-height:150%;
+}
+
+/*댓글창 표시때에는 left를 0으로*/
+footer {
+	font-family:"Arial", "Helventica", "sans-serif";
+	font-size:2em;
+	background: linear-gradient(to bottom, rgba(247,247,247,1) 0%,rgba(255,255,255,1) 9%,rgba(255,255,255,1) 100%);
+	border-color: rgb(232, 232, 232);
+	border-style: solid;
+	border-width: 1px;
+	
+	width:100%;
+	overflow:auto;
+	position: absolute;
+	top: 474px;
+	left: -1300px;
+}
+#commentBox.myfirst {
+	-webkit-animation:myfirst 3s;
+}
+@-webkit-keyframes myfirst /* Safari and Chrome */
+{
+0%   {background:red; left:0px; top:0px;}
+100%  {background:green; left:300px; top:0px;}
+}
+#comment {
+	font-size: 24px;
+	width:99.5%;
+	height:100px;
+}
+
+#stand_left_iframe
+{
+    position : absolute;
+    top      : -450px;
+    left     : -145px;
+    width    : 1280px;
+    height   : 20000px;
+}
+
+#stand_right_iframe
+{
+    position : absolute;
+    top      : -450px;
+    left     : -145px;
+    width    : 1280px;
+    height   : 20000px;
+}

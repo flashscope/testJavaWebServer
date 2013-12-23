@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8 />
+		<title>News Compare</title>
+		<link rel="stylesheet" type="text/css" href="./css_reset.css" />
+		<link rel="stylesheet" type="text/css" href="./layout.Css" />
+		
+		<script type="text/javascript">
+			var papers = new Array();
+			papers['mbc'] = '-280|-155|http://imnews.imbc.com/rss/news/news_01.xml';
+			papers['sbs'] = '0|-145|http://api.sbs.co.kr/xml/news/rss.jsp?pmDiv=politics';
+			papers['경향신문'] = '-480|-145|http://www.khan.co.kr/rss/rssdata/politic_news.xml';
+			papers['노컷뉴스'] = '-462|-150|http://rss.nocutnews.co.kr/NocutPolitics.xml';
+			papers['동아일보'] = '-450|-145|http://rss.donga.com/politics.xml';
+			papers['매일경제'] = '-355|-145|http://file.mk.co.kr/news/rss/rss_30200030.xml';
+			papers['미디어다음'] = '-145|-145|http://media.daum.net/syndication/politics.rss';
+			papers['연합뉴스'] = '-260|-185|http://www.yonhapnews.co.kr/RSS/politics.xml';
+			papers['오마이뉴스'] = '-480|-145|http://rss.ohmynews.com/rss/politics.xml';
+			papers['조선일보'] = '-240|-145|http://www.chosun.com/site/data/rss/politics.xml';
+			papers['중앙일보'] = '-280|-145|http://rss.joins.com/sonagi/joins_sonagi_politics_list.xml';
+			papers['프레시안'] = '-293|-145|http://www.pressian.com/rss/politics.xml';
+			papers['한겨레'] = '-191|-445|http://h21.hani.co.kr/rss/politics/';
+			papers['한국일보'] = '-330|-145|http://rss.hankooki.com/news/hk_politics.xml';
+
+			// 덧글창 앞 문구
+			var comment_box_title_left = '';
+			var comment_box_title_right = '';
+			
+			// iframe용 레이아웃 값
+			var stand_left_top = '0';
+			var stand_left_left = '0';
+			var stand_right_top = '0';
+			var stand_right_left = '0';
+			
+			// 타이틀을 클릭하면 새로고침
+			document.addEventListener("click", function(ev){
+				console.log( ev.MouseEvent );
+				if ( ev.target.id == "mainTitle") {
+					location.reload();
+				};
+			 }, false);
+			 
+			 // 체크박스를 클릭하면 댓글 창 이동
+			document.addEventListener('DOMContentLoaded', function () {
+				document.querySelector('#checkCommentBox').addEventListener('change', changeHandler);
+			});
+			
+			function changeHandler() {
+				if (checkCommentBox.checked) {
+					document.getElementById("commentBox").style.left = "-1300px";
+					moveRight();
+				} else {
+					document.getElementById("commentBox").style.left = "0px";
+					moveLeft();
+				}
+			}
+			
+			function moveRight() {
+				setTimeout(function(){
+					    var leftStyle = document.getElementById("commentBox").style.left ;
+					    var calcStyle = parseInt(leftStyle,10)+10;
+					    document.getElementById("commentBox").style.left = calcStyle + "px";
+					    
+					    if ( calcStyle < -9 ) {
+					    	moveRight();
+					    } else {
+					    	document.getElementById("commentBox").style.left = "0px";
+					    }
+					    
+				},1);
+			}
+			
+			function moveLeft() {
+				setTimeout(function(){
+					    var leftStyle = document.getElementById("commentBox").style.left ;
+					    var calcStyle = parseInt(leftStyle,10)-15;
+					    document.getElementById("commentBox").style.left = calcStyle + "px";
+					    
+					    if ( calcStyle > -1300 ) {
+					    	moveLeft();
+					    }
+					    
+				},1);
+			}
+			
+			
+			
+			// 덧글 창의 타이틀 설정
+			function setCommentTitle() {
+				if (comment_box_title_left != "" && comment_box_title_right != "" ) {
+					var title = '[' + comment_box_title_left + ", " + comment_box_title_right + '를 읽고]';
+				} else {
+					var title = '[' + comment_box_title_left + comment_box_title_right + '를 읽고]';
+				}
+				
+				document.getElementById("comment").innerHTML = title;
+			}
+		</script>
+		
+		
+		<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+		<script type="text/javascript">
+		/*
+		 *  구글 feed api를 사용하여 신문사의 rss정보를 받아온다.
+		 */
+			google.load("feeds", "1");
+
+			function getNews(stand, paper) {
+				var paper_data = papers[paper].split("|");
+				
+				// 덧글 창 타이틀에 쓸 문구
+				if (stand == "stand_left") {
+					comment_box_title_left = paper;
+				} else {
+					comment_box_title_right = paper;
+				}
+				setCommentTitle();
+				
+				var feed = new google.feeds.Feed(paper_data[2]);
+				feed.setNumEntries(999);
+				feed.load(function(result) {
+					
+					if (!result.error) {
+						var container = document.getElementById(stand);
+						var children = container.childNodes;
+						children[1].remove();
+
+						var div_newsList = document.createElement("div");
+						div_newsList.id = stand + "_list";
+						var div_feeder = document.createElement("div");
+						div_feeder.appendChild(document.createTextNode(result.feed.title));
+						div_newsList.appendChild(div_feeder);
+
+						for (var i = 0; i < result.feed.entries.length; i++) {
+							var entry = result.feed.entries[i];
+							var news = "<a href='javascript:void(0);' onclick='viewNews(\"" + stand + "\",\"" + entry.link + "\");'>" + entry.title + "</a>";
+							var div_news = document.createElement("div");
+							div_news.className = "news";
+							div_news.innerHTML = news;
+							div_newsList.appendChild(div_news);
+							//넣고 싶은데 마우스 오버 팝업?
+							//entry.content
+						}
+
+						if (stand == "stand_left") {
+							stand_left_top = paper_data[0];
+							stand_left_left = paper_data[1];
+						} else {
+							stand_right_top = paper_data[0];
+							stand_right_left = paper_data[1];
+						}
+
+						container.appendChild(div_newsList);
+
+					}
+					
+				});
+			}
+
+		</script>
+
+		<script type="text/javascript">
+		/*
+		 *  뉴스가 선택되면 뉴스를 iframe방식으로 화면에 표시해준다.
+		 */
+			function viewNews(stand, link) {
+				var container = document.getElementById(stand);
+				document.getElementById(stand + "_list").remove();
+
+				var ifr_news = document.createElement("iframe");
+				ifr_news.className = "iframe";
+				ifr_news.width = "100%";
+				ifr_news.height = "100%";
+				ifr_news.scrolling = "no";
+				ifr_news.id = stand + "_iframe";
+				ifr_news.src = link;
+				container.appendChild(ifr_news);
+
+				if (stand == "stand_left") {
+					document.getElementById(stand + "_iframe").style.top = stand_left_top + "px";
+					document.getElementById(stand + "_iframe").style.left = stand_left_left + "px";
+				} else {
+					document.getElementById(stand + "_iframe").style.top = stand_right_top + "px";
+					document.getElementById(stand + "_iframe").style.left = stand_right_left + "px";
+				}
+
+			}
+
+		</script>
+
+	</head>
+	<body>
+
+		<header>
+			<h2 id='mainTitle'> 뉴스 비교하면서 읽기 </h2>
+			<comment_show><input type="checkbox" id="checkCommentBox" name="checkCommentBox" value="댓글쓰기">댓글쓰기</comment_show>
+		</header>
+		
+		<article>
+			<section id="stand_left">
+				<ul class="paper">
+
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","mbc");'>mbc</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","sbs");'>sbs</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","경향신문");'>경향신문</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","노컷뉴스");'>노컷뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","동아일보");'>동아일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","매일경제");'>매일경제</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","미디어다음");'>미디어다음</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","연합뉴스");'>연합뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","오마이뉴스");'>오마이뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","조선일보");'>조선일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","중앙일보");'>중앙일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","프레시안");'>프레시안</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","한겨레");'>한겨레</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_left","한국일보");'>한국일보</a>
+					</li>
+
+				</ul>
+			</section>
+			<section id="stand_right">
+				<ul class="paper">
+
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","mbc");'>mbc</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","sbs");'>sbs</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","경향신문");'>경향신문</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","노컷뉴스");'>노컷뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","동아일보");'>동아일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","매일경제");'>매일경제</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","미디어다음");'>미디어다음</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","연합뉴스");'>연합뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","오마이뉴스");'>오마이뉴스</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","조선일보");'>조선일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","중앙일보");'>중앙일보</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","프레시안");'>프레시안</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","한겨레");'>한겨레</a>
+					</li>
+					<li>
+						<a href='javascript:void(0);' onclick='getNews("stand_right","한국일보");'>한국일보</a>
+					</li>
+
+				</ul>
+			</section>
+		</article>
+
+		<footer id="commentBox">
+			<ul class="paper">
+				<div id="saying_box"></div>
+				<li>
+					<textarea id="comment"></textarea>
+				</li>
+				<li>
+					<a href="#"><img src="./f_button.png"/></a>
+				</li>
+			</ul>
+			
+		</footer>
+
+	</body>
+</html>

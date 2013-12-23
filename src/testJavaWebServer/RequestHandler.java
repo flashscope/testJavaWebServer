@@ -44,6 +44,8 @@ public class RequestHandler extends Thread {
 
 			String requestUrl = HttpParser.parseRequestUrl(header);
 			String requestPath = HttpParser.parseRequestPath(requestUrl);
+			String extension = HttpParser.getExtension(requestPath);
+			String contentType = ContentTypeParser.getContentTypeByExtension(extension);
 			
 			//System.out.println("header : " + header);
 			//System.out.println("requestUrl : " + requestUrl);
@@ -63,13 +65,10 @@ public class RequestHandler extends Thread {
 			
 			if ( !file.exists() ) {
 				file = new File(HTML_DIR + "/Error/404.html");
-				responseNotFound(dos, file.length());
+				responseNotFound(dos, file.length(), contentType);
 			} else {
-				if ( HttpParser.getExtension(requestPath).equals("js") ) {
-					responseJavascriptOk(dos, file.length());
-				} else {
-					responseHtmlOk(dos, file.length());
-				}
+				
+				responseOk(dos, file.length(), contentType);
 			}
 			
 			fileWriter(dos, file);
@@ -90,19 +89,14 @@ public class RequestHandler extends Thread {
 		}
 	}
 
-	private void responseHtmlOk(DataOutputStream dos, long contentsSize)
+	private void responseOk(DataOutputStream dos, long contentsSize, String contentType)
 			throws IOException {
-		writeResponseHeader(dos, "200 OK", contentsSize, "text/html");
+		writeResponseHeader(dos, "200 OK", contentsSize, contentType);
 	}
 
-	private void responseJavascriptOk(DataOutputStream dos, long contentsSize)
+	private void responseNotFound(DataOutputStream dos, long contentsSize, String contentType)
 			throws IOException {
-		writeResponseHeader(dos, "200 OK", contentsSize, "text/javascript");
-	}
-	
-	private void responseNotFound(DataOutputStream dos, long contentsSize)
-			throws IOException {
-		writeResponseHeader(dos, "404 Not Found", contentsSize, "text/html");
+		writeResponseHeader(dos, "404 Not Found", contentsSize, contentType);
 	}
 	
 	private void responseServerError(DataOutputStream dos, long contentsSize)
