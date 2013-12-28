@@ -14,6 +14,23 @@ public class HttpParser {
 		return requestUrl.substring(0, index);
 	}
 	
+	public static String parseRequestDirectory(String requestPath) {
+		int slash = requestPath.lastIndexOf('/');
+		return requestPath.substring(0, slash);
+	}
+	
+	public static String parseRequestHost(String header) {
+		String lines[] = header.split("\\r?\\n");
+		String result = "";
+		for (String line : lines) {
+			if ( line.indexOf("Host: ") != -1 ) {
+				result = line.replace("Host: ", "");
+				break;
+			}
+		}
+		return result;
+	}
+	
 	public static String getExtension(String filePath) {
 	    int dot = filePath.lastIndexOf('.');
 	    return filePath.substring(dot + 1);

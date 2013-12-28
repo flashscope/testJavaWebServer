@@ -45,7 +45,7 @@ public class ContentTypeParser {
 		} else if (extension.equals("asp")) {
 			return "text/asp";
 		} else {
-			return "application/octet-stream";
+			return "text/html";
 		}
 		
 	}
