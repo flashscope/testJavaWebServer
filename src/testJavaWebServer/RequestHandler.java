@@ -10,7 +10,7 @@ import java.net.Socket;
 
 public class RequestHandler extends Thread {
 	
-	private static final String HTML_DIR = "public_html";
+	private static final String HTML_DIR = "./public_html";
 	private Socket connection;
 	
 	public RequestHandler(Socket connection) {
@@ -55,7 +55,6 @@ public class RequestHandler extends Thread {
 			
 			if ( !HttpParser.isFile(requestPath) ) {
 				if ( isFileExists("/index.html") ) {
-					System.out.println("!!!!!!!");
 					requestPath = "/index.html";
 					responseRedirect(dos, 0, "text/html", host + requestDirectory + requestPath);
 					connection.close();
@@ -127,7 +126,7 @@ public class RequestHandler extends Thread {
 		dos.writeBytes("Content-Type: " + contentType + ";charset=UTF-8" + NEW_LINE);
 		dos.writeBytes("Content-Length: " + contentsSize + NEW_LINE);
 		dos.writeBytes("Cache-Control:max-age=3600" + NEW_LINE);
-		dos.writeBytes("Server: NextServer/1.0.0 (Java/1.6/2013-12-19)" + NEW_LINE);
+		dos.writeBytes("Server: NextServer/1.1.0 (Java/1.7/2013-12-28)" + NEW_LINE);
 		dos.writeBytes("Date: " + Utill.getDate() + NEW_LINE);
 		dos.writeBytes(extra);
 		dos.writeBytes(NEW_LINE);

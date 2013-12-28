@@ -3,51 +3,53 @@ package testJavaWebServer;
 public class ContentTypeParser {
 
 	public static String getContentTypeByExtension(String extension) {
-
-		if (extension.equals("html")) {
+		
+		switch (extension) {
+		
+		case "html":
 			return "text/html";
-		} else if (extension.equals("htm")) {
+		case "htm":
 			return "text/html";
-		} else if (extension.equals("css")) {
+		case "css":
 			return "text/css";
-		} else if (extension.equals("js")) {
+		case "js":
 			return "text/javascript";
-		} else if (extension.equals("jpg")) {
+		case "jpg":
 			return "image/jpeg";
-		} else if (extension.equals("jpeg")) {
+		case "jpeg":
 			return "image/jpeg";
-		} else if (extension.equals("gif")) {
+		case "gif":
 			return "image/gif";
-		} else if (extension.equals("bmp")) {	
+		case "bmp":
 			return "image/bmp";
-		} else if (extension.equals("zip")) {
+		case "zip":
 			return "application/zip";
-		} else if (extension.equals("mp3")) {
+		case "mp3":
 			return "audio/mpeg3";
-		} else if (extension.equals("wav")) {
+		case "wav":
 			return "audio/wav";
-		} else if (extension.equals("avi")) {
+		case "avi":
 			return "video/avi";
-		} else if (extension.equals("mpg")) {
+		case "mpg":
 			return "video/mpeg";
-		} else if (extension.equals("mpeg")) {
+		case "mpeg":
 			return "video/mpeg";
-		} else if (extension.equals("asf")) {
+		case "asf":
 			return "video/x-ms-asf";
-		} else if (extension.equals("rtf")) {
+		case "rtf":
 			return "application/rtf";
-		} else if (extension.equals("doc")) {
+		case "doc":
 			return "application/msword";
-		} else if (extension.equals("xls")) {
+		case "xls":
 			return "application/vnd.ms-excel";
-		} else if (extension.equals("ppt")) {
+		case "ppt":
 			return "application/vnd.ms-PowerPoint";
-		} else if (extension.equals("asp")) {
+		case "asp":
 			return "text/asp";
-		} else {
+		default:
 			return "text/html";
 		}
-		
+
 	}
 
 }
