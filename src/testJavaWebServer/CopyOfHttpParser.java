@@ -2,7 +2,7 @@ package testJavaWebServer;
 
 import java.util.HashMap;
 
-public class HttpParser {
+public class CopyOfHttpParser {
 	
 	
 //	    POST /action.html HTTP/1.1
@@ -28,32 +28,14 @@ public class HttpParser {
 		headerMap.put("Version", headLineSplit[2]);
 
 		for (int i = 1; i < lines.length; ++i) {
-			
-			if ( lines[i] == null || lines[i].equals("") ) {
-				if ( headLineSplit[0].equals("POST") ) {
-					headerMap.put("PostData", lines[i+1]);
-				}
-				break;
-			}
-			
 			String lineSplit[] = lines[i].split(": ");
 			headerMap.put(lineSplit[0], lineSplit[1]);
 		}
-		
+
 		return headerMap;
 	}
 	
-	// login=111&passwd=1234
-	public static HashMap<String, String> parameterParser(String paraData) {
-		HashMap<String, String> paraMap = new HashMap<String, String>();
-		
-		String splitDataSet[] = paraData.split("&");
-		for (int i = 0; i < splitDataSet.length; ++i) {
-			String splitData[] = splitDataSet[i].split("=");
-			paraMap.put(splitData[0], splitData[1]);
-		}
-		return paraMap;
-	}
+	
 	
 	
 	public static String parseRequestPath(String requestUrl) {
@@ -69,6 +51,17 @@ public class HttpParser {
 		return requestPath.substring(0, slash);
 	}
 	
+	public static String parseRequestHost(String header) {
+		String lines[] = header.split("\\r?\\n");
+		String result = "";
+		for (String line : lines) {
+			if ( line.indexOf("Host: ") != -1 ) {
+				result = line.replace("Host: ", "");
+				break;
+			}
+		}
+		return result;
+	}
 	
 	public static String getExtension(String filePath) {
 	    int dot = filePath.lastIndexOf('.');

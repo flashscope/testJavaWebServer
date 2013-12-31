@@ -6,12 +6,12 @@ import java.net.Socket;
 
 public class WebServer {
 	
-	
+	private static final int port = 8080;
 	public static void main(String[] args) {
 
 		try {
-			ServerSocket serverSocket = new ServerSocket(8080);
-			
+			ServerSocket serverSocket = new ServerSocket(port);
+			MyLogger.printLog("Server START [" + port + "]");
 			// 클라이언트가 연결될때까지 대기한다. listen
 			Socket connection;
 			while ((connection = serverSocket.accept()) != null) {

@@ -1,12 +1,17 @@
 package testJavaWebServer;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.HashMap;
+
+import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 public class RequestHandler extends Thread {
 	
@@ -17,41 +22,65 @@ public class RequestHandler extends Thread {
 		this.connection = connection;
 	}
 
+	public static int counter=0;
 	public void run() {
-		MyLogger.printLog("this.getId(): " + this.getId() + " UUID:" + Utill.getUUID());
-		BufferedReader br = null;
+		//MyLogger.printLog("this.getId(): " + this.getId() + " UUID:" + Utill.getUUID());
 		DataOutputStream dos = null;
-		
 		try {
-			br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			dos = new DataOutputStream(connection.getOutputStream());
-			
-			StringBuilder sb = new StringBuilder();
-			String line = br.readLine();
-			while ( line != null && !line.equals("") ) {
-				sb.append(line + "\n");
-				line = br.readLine();
-			}
-			
-			String header = sb.toString();
-			String host = HttpParser.parseRequestHost(header);
-			System.out.println("header :"+header);
-			System.out.println("host :"+host);
-			
+			BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
+            dos = new DataOutputStream(connection.getOutputStream());
+            
+            StringBuilder sb = new StringBuilder();
+            int ch;
+            while ( (ch = bis.read()) > 0){
+                  sb.append((char)ch);
+                  if (bis.available() < 1) {
+                	  break;
+                  }
+            }
+            
+            String header = sb.toString();
+            
 			// NO HEADER ERROR
 			if (header == null || header.equals("")) {
 				MyLogger.printLog("connection no header : " + connection.getInetAddress().getHostAddress() );
 				connection.close();
 				return;
 			}
-
-			String requestUrl = HttpParser.parseRequestUrl(header);
+			//System.out.println("=====header=====");
+			//System.out.println(header);
+			//System.out.println("================");
+			HashMap<String,String> headerMap = HttpParser.HeaderParser(header);
+			String host = headerMap.get("Host");
+			//System.out.println("host-"+host);
+			
+			
+			// 주소 가져오기
+			String requestUrl = headerMap.get("URL");
+			//실제 파일주소 가져오기 GET ?기호 없애기
 			String requestPath = HttpParser.parseRequestPath(requestUrl);
 			String requestDirectory = HttpParser.parseRequestDirectory(requestPath);
 			
-			System.out.println("requestUrl : " + requestUrl);
+			//System.out.println("requestUrl : " + requestUrl);
 			System.out.println("requestPath : " + requestPath);
-			System.out.println("requestDirectory : " + requestDirectory);
+			//System.out.println("requestDirectory : " + requestDirectory);
+			
+			
+			if ( headerMap.get("Method").equals("POST") ) {
+				HashMap<String,String> paraMap = HttpParser.parameterParser( headerMap.get("PostData") );
+				
+				String message = "";
+				for (String parameter : paraMap.keySet()) {
+					message += parameter;
+					message += ":";
+					message += paraMap.get(parameter);
+					message += " ";
+				}
+				
+				System.out.println(message);
+				//dos.writeBytes(MyCGI.makeJavaScriptAlert(message) + NEW_LINE);
+			}
+			
 			
 			if ( !HttpParser.isFile(requestPath) ) {
 				if ( isFileExists("/index.html") ) {
@@ -69,8 +98,8 @@ public class RequestHandler extends Thread {
 			
 			String extension = HttpParser.getExtension(requestPath);
 			String contentType = ContentTypeParser.getContentTypeByExtension(extension);
-			System.out.println("extension :" + extension);
-			System.out.println("contentType :" + contentType);
+			//System.out.println("extension :" + extension);
+			//System.out.println("contentType :" + contentType);
 			
 			File file = new File(HTML_DIR + requestPath);
 			
@@ -81,12 +110,14 @@ public class RequestHandler extends Thread {
 				responseOk(dos, file.length(), contentType);
 			}
 			
+			
+			
 			fileWriter(dos, file);
 			
 			dos.flush();
-			br.close();
+			bis.close();
 			
-			connection.close();
+			//connection.close();
 		} catch (Exception e) {
 			MyLogger.printLog("connection ERROR:" + e.getMessage());
 			try {
@@ -121,15 +152,15 @@ public class RequestHandler extends Thread {
 	
 	private static final String NEW_LINE = "\r\n";
 	private void writeResponseHeader(DataOutputStream dos, String responseCode, long contentsSize, String contentType, String extra) throws IOException {
-		
-		dos.writeBytes("HTTP/1.1 " + responseCode + NEW_LINE);
-		dos.writeBytes("Content-Type: " + contentType + ";charset=UTF-8" + NEW_LINE);
-		dos.writeBytes("Content-Length: " + contentsSize + NEW_LINE);
-		dos.writeBytes("Cache-Control:max-age=3600" + NEW_LINE);
-		dos.writeBytes("Server: NextServer/1.1.0 (Java/1.7/2013-12-28)" + NEW_LINE);
-		dos.writeBytes("Date: " + Utill.getDate() + NEW_LINE);
-		dos.writeBytes(extra);
-		dos.writeBytes(NEW_LINE);
+        
+        dos.writeBytes("HTTP/1.1 " + responseCode + NEW_LINE);
+        dos.writeBytes("Content-Type: " + contentType + ";charset=UTF-8" + NEW_LINE);
+        dos.writeBytes("Content-Length: " + contentsSize + NEW_LINE);
+        dos.writeBytes("Cache-Control:max-age=3600" + NEW_LINE);
+        dos.writeBytes("Server: NextServer/1.1.0 (Java/1.7/2013-12-28)" + NEW_LINE);
+        dos.writeBytes("Date: " + Utill.getDate() + NEW_LINE);
+        dos.writeBytes(extra);
+        dos.writeBytes(NEW_LINE);
 	}
 	
 	private boolean isFileExists(String path) {
