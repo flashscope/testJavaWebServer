@@ -1,17 +1,13 @@
 package testJavaWebServer;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
-
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
 
 public class RequestHandler extends Thread {
 	
@@ -27,19 +23,34 @@ public class RequestHandler extends Thread {
 		//MyLogger.printLog("this.getId(): " + this.getId() + " UUID:" + Utill.getUUID());
 		DataOutputStream dos = null;
 		try {
-			BufferedInputStream bis = new BufferedInputStream(connection.getInputStream());
+			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             dos = new DataOutputStream(connection.getOutputStream());
             
-            StringBuilder sb = new StringBuilder();
-            int ch;
-            while ( (ch = bis.read()) > 0){
-                  sb.append((char)ch);
-                  if (bis.available() < 1) {
-                	  break;
-                  }
-            }
-            
-            String header = sb.toString();
+            String header = "";
+            String line = "";
+            int length = 0;
+            do {
+            	line = br.readLine();
+            	header += line;
+            	header += "\r\n";
+				
+				if ( line != null && line.contains( "Content-Length: " ) ) {
+					String splitLength[] = line.split(" ");
+					length = Integer.parseInt( splitLength[1] );
+				}
+				
+			} while ( line != null && !"".equals( line ) );
+			
+			
+            // postData영역 읽어오기
+			if ( length > 0 ) {
+				char[] newChar = new char[length];
+				br.read( newChar, 0, length );
+				for ( char c : newChar ) {
+					header += c;
+				}
+			}
+			
             
 			// NO HEADER ERROR
 			if (header == null || header.equals("")) {
@@ -47,9 +58,9 @@ public class RequestHandler extends Thread {
 				connection.close();
 				return;
 			}
-			//System.out.println("=====header=====");
-			//System.out.println(header);
-			//System.out.println("================");
+			System.out.println("=====header=====");
+			System.out.println(header);
+			System.out.println("================");
 			HashMap<String,String> headerMap = HttpParser.HeaderParser(header);
 			String host = headerMap.get("Host");
 			//System.out.println("host-"+host);
@@ -115,7 +126,7 @@ public class RequestHandler extends Thread {
 			fileWriter(dos, file);
 			
 			dos.flush();
-			bis.close();
+			br.close();
 			
 			//connection.close();
 		} catch (Exception e) {
