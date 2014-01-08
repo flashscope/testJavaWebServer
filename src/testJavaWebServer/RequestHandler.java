@@ -20,7 +20,7 @@ public class RequestHandler extends Thread {
 
 	public static int counter=0;
 	public void run() {
-		MyLogger.printLog("this.getId(): " + this.getId() + " UUID:" + Utill.getUUID());
+		//MyLogger.printLog("this.getId(): " + this.getId() + " UUID:" + Utill.getUUID());
 		DataOutputStream dos = null;
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));

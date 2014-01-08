@@ -10,6 +10,7 @@ public class WebServer {
 	public static void main(String[] args) {
 
 		try {
+			// backlog test
 			ServerSocket serverSocket = new ServerSocket(port,2);
 			//ServerSocket serverSocket = new ServerSocket(port);
 			
