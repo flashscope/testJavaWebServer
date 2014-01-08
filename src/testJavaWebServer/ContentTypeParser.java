@@ -1,55 +1,41 @@
 package testJavaWebServer;
 
+import java.util.HashMap;
+
 public class ContentTypeParser {
+	private static HashMap<String,String> typeMap = new HashMap<String, String>();
+	
+	public static void initialize() {
+		typeMap.clear();
+		
+		typeMap.put("html","text/html");
+		typeMap.put("htm","text/html");
+		typeMap.put("css","text/css");
+		typeMap.put("js","text/javascript");
+		typeMap.put("jpg","image/jpeg");
+		typeMap.put("jpeg","image/jpeg");
+		typeMap.put("gif","image/gif");
+		typeMap.put("bmp","image/bmp");
+		typeMap.put("zip","application/zip");
+		typeMap.put("mp3","audio/mpeg3");
+		typeMap.put("wav","audio/wav");
+		typeMap.put("avi","video/avi");
+		typeMap.put("mpg","video/mpeg");
+		typeMap.put("mpeg","video/mpeg");
+		typeMap.put("asf","video/x-ms-asf");
+		typeMap.put("rtf","application/rtf");
+		typeMap.put("doc","application/msword");
+		typeMap.put("xls","application/vnd.ms-excel");
+		typeMap.put("ppt","application/vnd.ms-PowerPoint");
+		typeMap.put("asp","text/asp");
 
+	}
 	public static String getContentTypeByExtension(String extension) {
-		
-		switch (extension) {
-		
-		case "html":
-			return "text/html";
-		case "htm":
-			return "text/html";
-		case "css":
-			return "text/css";
-		case "js":
-			return "text/javascript";
-		case "jpg":
-			return "image/jpeg";
-		case "jpeg":
-			return "image/jpeg";
-		case "gif":
-			return "image/gif";
-		case "bmp":
-			return "image/bmp";
-		case "zip":
-			return "application/zip";
-		case "mp3":
-			return "audio/mpeg3";
-		case "wav":
-			return "audio/wav";
-		case "avi":
-			return "video/avi";
-		case "mpg":
-			return "video/mpeg";
-		case "mpeg":
-			return "video/mpeg";
-		case "asf":
-			return "video/x-ms-asf";
-		case "rtf":
-			return "application/rtf";
-		case "doc":
-			return "application/msword";
-		case "xls":
-			return "application/vnd.ms-excel";
-		case "ppt":
-			return "application/vnd.ms-PowerPoint";
-		case "asp":
-			return "text/asp";
-		default:
-			return "text/html";
+		String result = typeMap.get(extension);
+		if ( null == result ) {
+			result = "text/html"; // or octstream
 		}
-
+		return result;
 	}
 
 }

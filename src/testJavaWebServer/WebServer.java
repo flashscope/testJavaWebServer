@@ -10,7 +10,10 @@ public class WebServer {
 	public static void main(String[] args) {
 
 		try {
-			ServerSocket serverSocket = new ServerSocket(port);
+			ServerSocket serverSocket = new ServerSocket(port,2);
+			//ServerSocket serverSocket = new ServerSocket(port);
+			
+			ContentTypeParser.initialize();
 			MyLogger.printLog("Server START [" + port + "]");
 			// 클라이언트가 연결될때까지 대기한다. listen
 			Socket connection;
